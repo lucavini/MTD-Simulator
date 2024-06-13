@@ -82,6 +82,7 @@ const shutDownCurrentVM = (): Promise<void> => {
 const startNextVM = (): Promise<void> => {
   const nextVMIndex = (currentVMIndex + 1) % vms.length;
   const nextVM = vms[nextVMIndex];
+  console.log('nextVM: ', nextVM);
 
   return new Promise((resolve, reject) => {
     // Start the next VM
@@ -102,7 +103,29 @@ const startNextVM = (): Promise<void> => {
   });
 };
 
+const runMigrateScript = (vmName: String): Promise<void> => {
+  console.log('vm to migrate: ', vmName);
+  const vmOrigin: String = vmName.charAt(vmName.length - 1);
+  const vmDestiny: Number = Number(vmOrigin) + 1;
+
+  return new Promise((resolve, reject) => {
+    // Start the next VM
+    exec(`/home/lucas/Documents/git/MTD/src/Coordinator/migrateVM.sh ${vmOrigin} ${vmDestiny}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      if (stderr) {
+        reject(stderr);
+        return;
+      }
+      resolve(); // Resolve the promise once the VM is started
+    });
+  });
+};
+
 async function startNewMigration() {
+  let vmName = '';
   const directoryPath = path.resolve(
     __dirname,
     '../../../Coordinator/migation_image',
@@ -119,7 +142,8 @@ async function startNewMigration() {
 
   // Get the current running VM
   await getRunningVMName()
-    .then((vmName) => {
+    .then((vm) => {
+      vmName = vm;
       console.log('Current running VM:', vmName);
     })
     .catch((error) => {
@@ -129,6 +153,7 @@ async function startNewMigration() {
   // Migrate to the next VM
   try {
     await shutDownCurrentVM(); // Wait until the current VM is shut down
+    await runMigrateScript(vmName);
     await startNextVM(); // Wait until the next VM is started
     console.log('Operation completed successfully.');
   } catch (error) {
