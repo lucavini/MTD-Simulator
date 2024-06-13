@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon src/server/index.ts"
+    "server": "nodemon src/server/index.ts",
+    "client": "nodemon src/client/index.ts"
   },
   "dependencies": {
     "debug": "3.0.0",
