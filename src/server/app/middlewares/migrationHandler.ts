@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import timeModule from '../modules/timeModule/timeModule';
+import timeModule from '../modules/timeModule';
 
 const migrationHandler = (req: Request, res: Response, next: NextFunction) => {
   timeModule.Refresh();
