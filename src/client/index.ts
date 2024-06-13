@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Caminho do arquivo
-const filePath = path.join(__dirname, 'data', 'text.txt');
+const filePath = path.join(__dirname, '../../data', 'text.txt');
 
 // Função para garantir que o diretório exista
 function ensureDirectoryExistence(filepath: String) {
