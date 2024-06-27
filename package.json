@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "server": "nodemon src/server/index.ts",
-    "client": "nodemon src/client/index.ts"
+    "client": "nodemon src/client/index.ts",
+    "force-migration": "nodemon src/server/app/modules/createNewMigration.ts"
   },
   "dependencies": {
     "debug": "3.0.0",
