@@ -8,6 +8,7 @@ import { exec } from 'child_process';
 
 const vms: string[] = [];
 let currentVMIndex = 0;
+const directoryPath = path.resolve(__dirname, '../../../Coordinator/');
 
 const listFileNamesRecursive = async (dirPath: string): Promise<string[]> => {
   async function readDir(dir: string) {
@@ -78,10 +79,16 @@ const shutDownCurrentVM = (): Promise<void> => {
   });
 };
 
-// Function to start the next VM
-const startNextVM = (): Promise<void> => {
+const getNextVMInfo = () => {
   const nextVMIndex = (currentVMIndex + 1) % vms.length;
   const nextVM = vms[nextVMIndex];
+
+  return { nextVM, nextVMIndex };
+};
+
+// Function to start the next VM
+const startNextVM = (): Promise<void> => {
+  const { nextVM, nextVMIndex } = getNextVMInfo();
   console.log('nextVM: ', nextVM);
 
   return new Promise((resolve, reject) => {
@@ -104,20 +111,20 @@ const startNextVM = (): Promise<void> => {
 };
 
 const runMigrateScript = (vmName: String): Promise<void> => {
-  console.log('vm to migrate: ', vmName);
   const vmOrigin: String = vmName.charAt(vmName.length - 1);
-  const vmDestiny: Number = Number(vmOrigin) + 1;
+  const vmDestiny = getNextVMInfo().nextVM.charAt(vmName.length - 1);
+  console.log(`migrating ${vmOrigin} to ${vmDestiny}`);
 
   return new Promise((resolve, reject) => {
     // Start the next VM
-    exec(`/home/lucas/Documents/git/MTD/src/Coordinator/migrateVM.sh ${vmOrigin} ${vmDestiny}`, (error, stdout, stderr) => {
+    exec(`${directoryPath}/migrateVM.sh ${vmOrigin} ${vmDestiny}`, (error, stdout) => {
       if (error) {
+        console.error('error: ', error);
         reject(error);
         return;
       }
-      if (stderr) {
-        reject(stderr);
-        return;
+      if (stdout) {
+        console.log('stdout: ', stdout);
       }
       resolve(); // Resolve the promise once the VM is started
     });
@@ -126,15 +133,11 @@ const runMigrateScript = (vmName: String): Promise<void> => {
 
 async function startNewMigration() {
   let vmName = '';
-  const directoryPath = path.resolve(
-    __dirname,
-    '../../../Coordinator/migation_image',
-  );
 
   // Get all VMs in migation_image folder
-  await listFileNamesRecursive(directoryPath)
-    .then(() => {
-    //   console.log('CurrentVMs:', fileNames);
+  await listFileNamesRecursive(`${directoryPath}/migation_image`)
+    .then((allCurrentVMs) => {
+      console.log('all current VMs:', allCurrentVMs);
     })
     .catch((error) => {
       console.error('Error on list all VMs:', error);
