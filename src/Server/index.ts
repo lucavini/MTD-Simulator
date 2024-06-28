@@ -1,14 +1,14 @@
+import '../../path.config';
 import express from 'express';
-import route from './Router';
-import migrationHandler from './app/middlewares/migrationHandler';
-import debug from '../lib/Debug';
+import debug from '@Lib/Debug';
+import migrationHandler from './middlewares/migrationHandler';
 
 const app = express();
-const port = 3333;
+const port = process.env.SERVER_PORT;
 
 app.use(express.json());
 app.use(migrationHandler);
-app.use(route);
+
 app.listen(port, () => {
   debug.info('🚀 Server', `is running on http://localhost:${port}`);
 });
