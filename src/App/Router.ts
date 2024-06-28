@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ServiceController from './app/controller/serviceController';
+import ServiceController from './Services/serviceController';
 
 const route = Router();
 route.get('/', ServiceController.requestService);

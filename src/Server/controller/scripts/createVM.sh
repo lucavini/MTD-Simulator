@@ -1,6 +1,7 @@
 #!/bin/bash
 
 vm_version=$1
+directoryPath=$2
 
 root="77148816"
 mkdir -p /home/lucas/Documents/git/MTD/src/Coordinator/migation_image

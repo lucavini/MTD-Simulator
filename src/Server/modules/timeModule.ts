@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import debug from '../../../lib/Debug';
-import startNewMigration from './createNewMigration';
+import debug from '@Lib/Debug';
+import startNewMigration from '../controller/tasks/createNewMigration';
 
 class TimeModule {
   Refresh() {
