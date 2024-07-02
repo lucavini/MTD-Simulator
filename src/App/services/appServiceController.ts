@@ -1,8 +1,11 @@
+import debug from '@Lib/Debug';
 import { Request, Response } from 'express';
 
-class ServiceController {
+class AppServiceController {
   async requestService(req: Request, res: Response) {
     try {
+      debug.info('AppServiceController', 'service provided successfully');
+
       res.json({
         message: 'success',
       });
@@ -14,4 +17,4 @@ class ServiceController {
   }
 }
 
-export default new ServiceController();
+export default new AppServiceController();
