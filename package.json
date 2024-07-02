@@ -7,10 +7,11 @@
     "build": "tsc",
     "server": "nodemon src/Server/index.ts",
     "app": "nodemon src/App/index.ts",
-    "client": "nodemon src/client/index.ts",
+    "client": "nodemon src/Client/index.ts",
     "force-migration": "nodemon src/Server/controller/tasks/createNewMigration.ts"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "debug": "3.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
