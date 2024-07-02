@@ -8,6 +8,7 @@ const port = process.env.APP_PORT;
 
 app.use(express.json());
 app.use(route);
+
 app.listen(port, () => {
   debug.info('🚀 App', `is running on http://localhost:${port}`);
 });
