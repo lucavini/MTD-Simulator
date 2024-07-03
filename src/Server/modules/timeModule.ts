@@ -1,9 +1,11 @@
 import cron from 'node-cron';
 import debug from '@Lib/Debug';
 import startNewMigration from '../controller/tasks/createNewMigration';
+import globalMigration from '../controller/tasks/GlobalMigration';
+import checkRunningVMs from '../controller/tasks/getRunningVMName';
 
 class TimeModule {
-  private static instance: TimeModule;
+  public static instance: TimeModule;
 
   private constructor() {
     debug.info('TimeModule', 'instance created');
@@ -17,14 +19,17 @@ class TimeModule {
     return TimeModule.instance;
   }
 
-  public Refresh() {
-    cron.schedule('*/15 * * * * *', () => {
-      debug.warn('⏰ TimeModule', ' Time-based migration has started');
-      startNewMigration();
+  public start() {
+    debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
+    cron.schedule('*/15 * * * * *', async () => {
+      const canStartMigration = !globalMigration.MigrationIsRunning && !!(await checkRunningVMs());
+
+      if (canStartMigration) {
+        debug.info('⏰ TimeModule', 'starting new migration');
+        startNewMigration();
+      }
     });
   }
 }
 
-const timeModule = TimeModule.Instance();
-
-export default timeModule;
+export default TimeModule;
