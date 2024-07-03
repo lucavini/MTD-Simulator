@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'child_process';
 import debug from '@Lib/Debug';
+import globalMigration from './GlobalMigration';
+import checkRunningVMs from './getRunningVMName';
 
 const vms: string[] = [];
 let currentVMIndex = 0;
@@ -26,33 +28,17 @@ const listAllVMsName = async (dirPath: string): Promise<string[]> => {
   return vms;
 };
 
-const getRunningVMName = (): Promise<string> => new Promise((resolve, reject) => {
-  exec('virsh list', (error, stdout, stderr) => {
-    if (error) {
-      reject(error);
-      return;
+const getRunningVMName = async () => {
+  const runningVMName = await checkRunningVMs();
+
+  vms.forEach((vm, index) => {
+    if (vm === runningVMName) {
+      currentVMIndex = index;
     }
-    if (stderr) {
-      reject(stderr);
-      return;
-    }
-
-    const lines = stdout.trim().split('\n').slice(2);
-
-    const runningVMNames = lines.map((line) => {
-      const parts = line.trim().split(/\s+/);
-      return parts[1];
-    });
-
-    vms.forEach((vm, index) => {
-      if (vm === runningVMNames[0]) {
-        currentVMIndex = index;
-      }
-    });
-
-    resolve(runningVMNames[0]);
   });
-});
+
+  return runningVMName;
+};
 
 // Function to shut down the current VM
 const shutDownCurrentVM = (): Promise<void> => {
