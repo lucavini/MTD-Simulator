@@ -126,24 +126,26 @@ async function startNewMigration() {
       debug.error('listAllVMsName', `Error on list all VMs: ${error}`);
     });
 
-  // Get the current running VM
-  await getRunningVMName()
-    .then((vm) => {
-      vmName = vm;
-      debug.info('getRunningVMName', `Current running VM: ${vmName}`);
-    })
-    .catch((error) => {
-      debug.error('getRunningVMName', `Error on get current running VM: ${error}`);
-    });
+  // check the current running VM
+  if (!globalMigration.currentRunningVM) {
+    return;
+  }
 
-  // Migrate to the next VM
+  vmName = await getRunningVMName();
+  debug.info('getRunningVMName', `Current running VM: ${vmName}`);
+
   try {
-    await shutDownCurrentVM(); // Wait until the current VM is shut down
+    globalMigration.setMigrationIsRunning(true);
+
+    await shutDownCurrentVM();
     await runMigrateScript(vmName);
-    await startNextVM(); // Wait until the next VM is started
+    await startNextVM();
+
     debug.info('startNewMigration', 'Operation completed successfully');
   } catch (error) {
     debug.error('startNewMigration', `Error: ${error}`);
+  } finally {
+    globalMigration.setMigrationIsRunning(false);
   }
 }
 
