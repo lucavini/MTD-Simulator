@@ -3,6 +3,8 @@ import debug from '@Lib/Debug';
 class GlobalMigration {
   private static migrationIsRunning: boolean;
 
+  private static appIsRunning: boolean;
+
   private static currentRunningVM: string | undefined;
 
   private static instance: GlobalMigration;
@@ -15,10 +17,19 @@ class GlobalMigration {
     if (!GlobalMigration.instance) {
       GlobalMigration.instance = new GlobalMigration();
       GlobalMigration.migrationIsRunning = false;
+      GlobalMigration.appIsRunning = false;
       GlobalMigration.currentRunningVM = undefined;
     }
 
     return GlobalMigration.instance;
+  }
+
+  public get AppIsRunning() {
+    return GlobalMigration.appIsRunning;
+  }
+
+  public setAppIsRunning(state: boolean) {
+    GlobalMigration.appIsRunning = state;
   }
 
   public get MigrationIsRunning() {
