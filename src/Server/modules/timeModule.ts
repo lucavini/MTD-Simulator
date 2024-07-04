@@ -19,12 +19,20 @@ class TimeModule {
     return TimeModule.instance;
   }
 
+  public async canStartMigration() {
+    return (
+      !globalMigration.MigrationIsRunning
+      && globalMigration.AppIsRunning
+      && !!(await checkRunningVMs())
+    );
+  }
+
   public start() {
     debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
     cron.schedule('*/15 * * * * *', async () => {
-      const canStartMigration = !globalMigration.MigrationIsRunning && !!(await checkRunningVMs());
+      const enabled = await this.canStartMigration();
 
-      if (canStartMigration) {
+      if (enabled) {
         debug.info('⏰ TimeModule', 'starting new migration');
         startNewMigration();
       }

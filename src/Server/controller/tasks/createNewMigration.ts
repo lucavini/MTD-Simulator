@@ -55,7 +55,7 @@ const shutDownCurrentVM = (): Promise<void> => {
         reject(stderr);
         return;
       }
-
+      globalMigration.setAppIsRunning(false);
       debug.info('shutDownCurrentVM', `Shutting down ${currentVM}...`);
       resolve(); // Resolve the promise once the VM is shut down
     });
