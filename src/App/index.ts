@@ -3,6 +3,7 @@ import express from 'express';
 import debug from '@Lib/Debug';
 import io from 'socket.io-client';
 import route from './Router';
+import getDataLogs from './services/datalog';
 
 const app = express();
 const port = process.env.APP_PORT;
@@ -10,6 +11,8 @@ const socketPort = process.env.SOCKET_PORT;
 
 app.use(express.json());
 app.use(route);
+
+getDataLogs.start();
 
 app.listen(port, () => {
   debug.info('🚀 App', `is running on http://localhost:${port}`);
