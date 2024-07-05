@@ -4,6 +4,8 @@ import startNewMigration from '../controller/tasks/createNewMigration';
 import globalMigration from '../controller/tasks/GlobalMigration';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
 
+const delay = 10 * 60 * 1000;
+
 class TimeModule {
   public static instance: TimeModule;
 
@@ -48,7 +50,7 @@ class TimeModule {
 
     TimeModule.timer = setTimeout(async () => {
       await this.migrationTask();
-    }, 15000);
+    }, delay);
   }
 
   public stop() {
@@ -58,7 +60,7 @@ class TimeModule {
 
     TimeModule.timer = setTimeout(async () => {
       await this.migrationTask();
-    }, 15000);
+    }, delay);
   }
 }
 
