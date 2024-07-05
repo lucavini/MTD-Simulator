@@ -7,6 +7,10 @@ import checkRunningVMs from '../controller/tasks/getRunningVMName';
 class TimeModule {
   public static instance: TimeModule;
 
+  public static cronJob: cron.ScheduledTask;
+
+  public static timer: NodeJS.Timeout;
+
   private constructor() {
     debug.info('TimeModule', 'instance created');
   }
@@ -15,7 +19,6 @@ class TimeModule {
     if (!TimeModule.instance) {
       TimeModule.instance = new TimeModule();
     }
-
     return TimeModule.instance;
   }
 
@@ -27,16 +30,35 @@ class TimeModule {
     );
   }
 
+  public async migrationTask() {
+    const enabled = await this.canStartMigration();
+
+    if (enabled) {
+      debug.info('⏰ TimeModule', 'starting new migration');
+      startNewMigration();
+    }
+  }
+
   public start() {
     debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
-    cron.schedule('*/15 * * * * *', async () => {
-      const enabled = await this.canStartMigration();
+    // TimeModule.cronJob = cron.schedule('*/15 * * * * *', async () => {
+    //   await this.migrationTask();
+    //   // console.log('rodou');
+    // });
 
-      if (enabled) {
-        debug.info('⏰ TimeModule', 'starting new migration');
-        startNewMigration();
-      }
-    });
+    TimeModule.timer = setTimeout(async () => {
+      await this.migrationTask();
+    }, 15000);
+  }
+
+  public stop() {
+    debug.warn('⏰ TimeModule', ' Time-based migration rescheduled');
+    // TimeModule.cronJob.stop();
+    clearTimeout(TimeModule.timer);
+
+    TimeModule.timer = setTimeout(async () => {
+      await this.migrationTask();
+    }, 15000);
   }
 }
 

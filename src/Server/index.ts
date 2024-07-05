@@ -29,6 +29,7 @@ io.on('connection', (socket) => {
   socket.on('App running', (data: string) => {
     debug.info('socket', data);
     globalMigration.setAppIsRunning(true);
+    timeModule.stop();
   });
 });
 
