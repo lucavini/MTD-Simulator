@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import debug from '@Lib/Debug';
 import startNewMigration from '../controller/tasks/createNewMigration';
-import globalMigration from '../controller/tasks/GlobalMigration';
+import globalMigration from '../controller/classes/GlobalMigration';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
 
 const delay = 10 * 60 * 1000;

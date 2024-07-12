@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'child_process';
 import debug from '@Lib/Debug';
-import globalMigration from './GlobalMigration';
+import globalMigration from '../classes/GlobalMigration';
 import checkRunningVMs from './getRunningVMName';
 
 const vms: string[] = [];
@@ -100,17 +100,20 @@ const runMigrateScript = (vmName: String): Promise<void> => {
 
   return new Promise((resolve, reject) => {
     // Start the next VM
-    exec(`${directoryPath}/scripts/migrateVM.sh ${vmOrigin} ${vmDestiny} ${directoryPath}`, (error, stdout) => {
-      if (error) {
-        debug.error('runMigrateScript', `error: ${error}`);
-        reject(error);
-        return;
-      }
-      if (stdout) {
-        debug.info('runMigrateScript', `stdout: ${stdout}`);
-      }
-      resolve(); // Resolve the promise once the VM is started
-    });
+    exec(
+      `${directoryPath}/scripts/migrateVM.sh ${vmOrigin} ${vmDestiny} ${directoryPath}`,
+      (error, stdout) => {
+        if (error) {
+          debug.error('runMigrateScript', `error: ${error}`);
+          reject(error);
+          return;
+        }
+        if (stdout) {
+          debug.info('runMigrateScript', `stdout: ${stdout}`);
+        }
+        resolve(); // Resolve the promise once the VM is started
+      },
+    );
   });
 };
 

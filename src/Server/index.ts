@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import migrationHandler from './middlewares/migrationHandler';
 import route from './routes';
 import TimeModule from './modules/timeModule';
-import globalMigration from './controller/tasks/GlobalMigration';
+import globalMigration from './controller/classes/GlobalMigration';
 
 const app = express();
 const httpServer = createServer(app);
