@@ -27,15 +27,18 @@ class TimeModule {
   }
 
   public async canStartMigration() {
+    const runningVm = !!await checkRunningVMs();
+
     return (
-      !globalMigration.MigrationIsRunning
-      && globalMigration.AppIsRunning
-      && !!(await checkRunningVMs())
+      !globalMigration.MigrationIsRunning &&
+      globalMigration.AppIsRunning &&
+      runningVm
     );
   }
 
   public async migrationTask() {
     const enabled = await this.canStartMigration();
+    const runningVm = await checkRunningVMs();
 
     if (enabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
