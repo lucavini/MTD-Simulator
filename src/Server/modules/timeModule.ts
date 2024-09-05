@@ -3,8 +3,10 @@ import debug from '@Lib/Debug';
 import startNewMigration from '../controller/tasks/createNewMigration';
 import globalMigration from '../controller/classes/GlobalMigration';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
+import migrationTime from '../controller/classes/MigrationTime';
 
-const delay = 10 * 60 * 1000;
+const delay = 5 * 60 * 1000;
+// const delay = 5000;
 
 class TimeModule {
   public static instance: TimeModule;
@@ -37,11 +39,12 @@ class TimeModule {
 
     if (enabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
+      migrationTime.serviceDown(await checkRunningVMs());
       startNewMigration();
     }
   }
 
-  public start() {
+  public async start() {
     debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
     // TimeModule.cronJob = cron.schedule('*/15 * * * * *', async () => {
     //   await this.migrationTask();
@@ -53,8 +56,9 @@ class TimeModule {
     }, delay);
   }
 
-  public stop() {
+  public async stop() {
     debug.warn('⏰ TimeModule', ' Time-based migration rescheduled');
+    migrationTime.serviceUp(await checkRunningVMs());
     // TimeModule.cronJob.stop();
     clearTimeout(TimeModule.timer);
 
