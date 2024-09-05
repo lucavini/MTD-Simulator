@@ -36,7 +36,7 @@ class TimeModule {
     );
   }
 
-  public async migrationTask() {
+  public async startMigration() {
     const enabled = await this.canStartMigration();
     const runningVm = await checkRunningVMs();
 
@@ -49,13 +49,9 @@ class TimeModule {
 
   public async start() {
     debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
-    // TimeModule.cronJob = cron.schedule('*/15 * * * * *', async () => {
-    //   await this.migrationTask();
-    //   // console.log('rodou');
-    // });
 
     TimeModule.timer = setTimeout(async () => {
-      await this.migrationTask();
+      await this.startMigration();
     }, delay);
   }
 
@@ -68,7 +64,7 @@ class TimeModule {
     clearTimeout(TimeModule.timer);
 
     TimeModule.timer = setTimeout(async () => {
-      await this.migrationTask();
+      await this.startMigration();
     }, delay);
   }
 }
