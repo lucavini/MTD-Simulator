@@ -26,7 +26,7 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  socket.on('App running', (data: string) => {
+  socket.on('App running', async (data: string) => {
     debug.info('socket', data);
     globalMigration.setAppIsRunning(true);
     timeModule.stop();
