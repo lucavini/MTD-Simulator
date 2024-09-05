@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import debug from '@Lib/Debug';
 import startNewMigration from '../controller/tasks/createNewMigration';
-import globalMigration from '../controller/classes/GlobalMigration';
+import migrationState from '../controller/classes/MigrationState';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
 import serviceLog from '../controller/classes/ServiceLog';
 
@@ -27,11 +27,11 @@ class TimeModule {
   }
 
   public async canStartMigration() {
-    const runningVm = !!await checkRunningVMs();
+    const runningVm = !!(await checkRunningVMs());
 
     return (
-      !globalMigration.MigrationIsRunning &&
-      globalMigration.AppIsRunning &&
+      !migrationState.MigrationIsRunning &&
+      migrationState.AppIsRunning &&
       runningVm
     );
   }

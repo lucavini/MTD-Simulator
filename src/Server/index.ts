@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import migrationHandler from './middlewares/migrationHandler';
 import route from './routes';
 import TimeModule from './modules/timeModule';
-import globalMigration from './controller/classes/GlobalMigration';
+import migrationState from './controller/classes/MigrationState';
 
 const app = express();
 const httpServer = createServer(app);
@@ -28,7 +28,7 @@ const io = new Server(httpServer, {
 io.on('connection', (socket) => {
   socket.on('App running', async (data: string) => {
     debug.info('socket', data);
-    globalMigration.setAppIsRunning(true);
+    migrationState.setAppIsRunning(true);
     timeModule.stop();
   });
 });
