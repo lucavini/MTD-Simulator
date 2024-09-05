@@ -3,7 +3,7 @@ import debug from '@Lib/Debug';
 import startNewMigration from '../controller/tasks/createNewMigration';
 import globalMigration from '../controller/classes/GlobalMigration';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
-import migrationTime from '../controller/classes/MigrationTime';
+import serviceLog from '../controller/classes/ServiceLog';
 
 const delay = 5 * 60 * 1000;
 // const delay = 5000;
@@ -39,7 +39,7 @@ class TimeModule {
 
     if (enabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
-      migrationTime.serviceDown(await checkRunningVMs());
+      serviceLog.serviceDown(runningVm);
       startNewMigration();
     }
   }
@@ -58,8 +58,10 @@ class TimeModule {
 
   public async stop() {
     debug.warn('⏰ TimeModule', ' Time-based migration rescheduled');
-    migrationTime.serviceUp(await checkRunningVMs());
-    // TimeModule.cronJob.stop();
+
+    const runningVm = await checkRunningVMs();
+    serviceLog.serviceUp(runningVm);
+
     clearTimeout(TimeModule.timer);
 
     TimeModule.timer = setTimeout(async () => {

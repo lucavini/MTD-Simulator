@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 
 const directoryPath = path.resolve(__dirname, '../');
 
-class MigrationTime {
+class ServiceLog {
   serviceUp(vmId?: string) {
     exec('pkill datalog.sh');
     exec(`${directoryPath}/scripts/datalog.sh 1 ${vmId}`);
@@ -15,6 +15,6 @@ class MigrationTime {
   }
 }
 
-const migrationTime = new MigrationTime();
+const serviceLog = new ServiceLog();
 
-export default migrationTime;
+export default serviceLog;
