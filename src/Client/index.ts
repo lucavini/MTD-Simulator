@@ -2,7 +2,7 @@ import '../../path.config';
 import express from 'express';
 import cron from 'node-cron';
 import debug from '@Lib/Debug';
-import getData from './requestService';
+import getData from './services/requestService';
 
 const app = express();
 const port = process.env.CLIENT_PORT;
