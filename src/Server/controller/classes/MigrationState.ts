@@ -12,7 +12,7 @@ class MigrationState {
   private static timeBetweenMigrations: number;
 
   private constructor() {
-    debug.info('TimeModule', 'instance created');
+    debug.info('MigrationState', 'instance created');
   }
 
   public static Instance(): MigrationState {

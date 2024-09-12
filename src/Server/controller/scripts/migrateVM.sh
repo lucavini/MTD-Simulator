@@ -5,4 +5,4 @@ directoryPath=$3
 
 root="77148816"
 
-echo "$root" | sudo -S cp "${directoryPath}/migation_image/UbuntuVM0${vm_origin}.qcow2" "${directoryPath}/migation_image/UbuntuVM0${vm_destiny}.qcow2"
+echo "$root" | sudo -S cp "${directoryPath}/image/UbuntuVM0${vm_origin}.qcow2" "${directoryPath}/image/UbuntuVM0${vm_destiny}.qcow2"

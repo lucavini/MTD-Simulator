@@ -9,7 +9,7 @@ const vms: string[] = [];
 let currentVMIndex = 0;
 const directoryPath = path.resolve(__dirname, '../');
 
-const listAllVMsName = async (dirPath: string): Promise<string[]> => {
+export const listAllVMsName = async (dirPath: string): Promise<string[]> => {
   async function readDir(dir: string) {
     const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
@@ -28,7 +28,7 @@ const listAllVMsName = async (dirPath: string): Promise<string[]> => {
   return vms;
 };
 
-const getRunningVMName = async () => {
+export const getRunningVMName = async () => {
   const runningVMName = await checkRunningVMs();
 
   vms.forEach((vm, index) => {
@@ -41,7 +41,7 @@ const getRunningVMName = async () => {
 };
 
 // Function to shut down the current VM
-const shutDownCurrentVM = (): Promise<void> => {
+export const shutDownCurrentVM = (): Promise<void> => {
   const currentVM = vms[currentVMIndex];
 
   return new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ const shutDownCurrentVM = (): Promise<void> => {
   });
 };
 
-const getNextVMInfo = () => {
+export const getNextVMInfo = () => {
   const nextVMIndex = (currentVMIndex + 1) % vms.length;
   const nextVM = vms[nextVMIndex];
 
@@ -70,7 +70,7 @@ const getNextVMInfo = () => {
 };
 
 // Function to start the next VM
-const startNextVM = (): Promise<void> => {
+export const startNextVM = (): Promise<void> => {
   const { nextVM, nextVMIndex } = getNextVMInfo();
   debug.info('startNextVM', `nextVM: ${nextVM}`);
 
@@ -93,7 +93,7 @@ const startNextVM = (): Promise<void> => {
   });
 };
 
-const runMigrateScript = (vmName: String): Promise<void> => {
+export const runMigrateScript = (vmName: String): Promise<void> => {
   const vmOrigin: String = vmName.charAt(vmName.length - 1);
   const vmDestiny = getNextVMInfo().nextVM.charAt(vmName.length - 1);
   debug.info('runMigrateScript', `migrating ${vmOrigin} to ${vmDestiny}`);
@@ -118,8 +118,8 @@ const runMigrateScript = (vmName: String): Promise<void> => {
 };
 
 async function startNewMigration() {
-  // Get all VMs in migation_image folder
-  await listAllVMsName(`${directoryPath}/migation_image`)
+  // Get all VMs in image folder
+  await listAllVMsName(`${directoryPath}/image`)
     .then((allCurrentVMs) => {
       debug.info('listAllVMsName', `all current VMs: ${allCurrentVMs}`);
     })

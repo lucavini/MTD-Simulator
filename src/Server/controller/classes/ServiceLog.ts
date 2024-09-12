@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import debug from '@Root/src/Lib/Debug';
 
 interface ObjectLog {
   vmID: string;
@@ -7,7 +8,21 @@ interface ObjectLog {
   intervalID: NodeJS.Timeout;
 }
 class ServiceLog {
+  private static instance: ServiceLog;
+
   private arrayIntervals: ObjectLog[] = [];
+
+  public static Instance(): ServiceLog {
+    if (!ServiceLog.instance) {
+      ServiceLog.instance = new ServiceLog();
+    }
+
+    return ServiceLog.instance;
+  }
+
+  private constructor() {
+    debug.info('ServiceLog', 'instance created');
+  }
 
   appendToCSV = (isServiceUp: number, vmID: string) => {
     const filePath = path.join(__dirname, `../Data/${vmID}.csv`);
@@ -92,5 +107,6 @@ class ServiceLog {
   }
 }
 
-const serviceLog = new ServiceLog();
+const serviceLog = ServiceLog.Instance();
+
 export default serviceLog;
