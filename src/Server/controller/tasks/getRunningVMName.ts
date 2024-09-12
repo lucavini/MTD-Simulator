@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import globalMigration from '../classes/GlobalMigration';
+import globalMigration from '../classes/MigrationState';
 
 const checkRunningVMs = (): Promise<string> =>
   new Promise((resolve, reject) => {

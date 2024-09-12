@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'child_process';
 import debug from '@Lib/Debug';
-import globalMigration from '../classes/GlobalMigration';
+import migrationState from '../classes/MigrationState';
 import checkRunningVMs from './getRunningVMName';
 
 const vms: string[] = [];
@@ -55,7 +55,7 @@ const shutDownCurrentVM = (): Promise<void> => {
         reject(stderr);
         return;
       }
-      globalMigration.setAppIsRunning(false);
+      migrationState.setAppIsRunning(false);
       debug.info('shutDownCurrentVM', `Shutting down ${currentVM}...`);
       resolve(); // Resolve the promise once the VM is shut down
     });
@@ -118,8 +118,6 @@ const runMigrateScript = (vmName: String): Promise<void> => {
 };
 
 async function startNewMigration() {
-  let vmName = '';
-
   // Get all VMs in migation_image folder
   await listAllVMsName(`${directoryPath}/migation_image`)
     .then((allCurrentVMs) => {
@@ -129,16 +127,16 @@ async function startNewMigration() {
       debug.error('listAllVMsName', `Error on list all VMs: ${error}`);
     });
 
-  // check the current running VM
-  if (!globalMigration.currentRunningVM) {
+  // if currentRunningVM is undefined, stop migration
+  if (!migrationState.currentRunningVM) {
     return;
   }
 
-  vmName = await getRunningVMName();
+  const vmName = await getRunningVMName();
   debug.info('getRunningVMName', `Current running VM: ${vmName}`);
 
   try {
-    globalMigration.setMigrationIsRunning(true);
+    migrationState.setMigrationIsRunning(true);
 
     await shutDownCurrentVM();
     await runMigrateScript(vmName);
@@ -148,7 +146,7 @@ async function startNewMigration() {
   } catch (error) {
     debug.error('startNewMigration', `Error: ${error}`);
   } finally {
-    globalMigration.setMigrationIsRunning(false);
+    migrationState.setMigrationIsRunning(false);
   }
 }
 
