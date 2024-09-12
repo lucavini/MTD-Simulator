@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
   socket.on('App running', async (data: string) => {
     debug.info('socket', data);
     migrationState.setAppIsRunning(true);
-    timeModule.rescheduled();
+    timeModule.schedule();
   });
 });
 
