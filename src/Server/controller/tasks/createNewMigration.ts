@@ -129,12 +129,12 @@ async function startNewMigration() {
       debug.error('listAllVMsName', `Error on list all VMs: ${error}`);
     });
 
-  // check the current running VM
+  // if currentRunningVM is undefined, stop migration
   if (!migrationState.currentRunningVM) {
     return;
   }
 
-  vmName = await getRunningVMName();
+  const vmName = await getRunningVMName();
   debug.info('getRunningVMName', `Current running VM: ${vmName}`);
 
   try {
