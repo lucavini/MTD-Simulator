@@ -37,10 +37,10 @@ class TimeModule {
   }
 
   public async startMigration() {
-    const enabled = await this.canStartMigration();
+    const isEnabled = await this.canStartMigration();
     const runningVm = await checkRunningVMs();
 
-    if (enabled) {
+    if (isEnabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
       serviceLog.serviceDown(runningVm);
       startNewMigration();
