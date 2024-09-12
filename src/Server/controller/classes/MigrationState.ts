@@ -9,6 +9,8 @@ class MigrationState {
 
   private static instance: MigrationState;
 
+  private static timeBetweenMigrations: number;
+
   private constructor() {
     debug.info('TimeModule', 'instance created');
   }
@@ -19,9 +21,15 @@ class MigrationState {
       MigrationState.migrationIsRunning = false;
       MigrationState.appIsRunning = false;
       MigrationState.currentRunningVM = undefined;
+      MigrationState.timeBetweenMigrations =
+        1000 * 60 * (Number(process.env.TIME_MIGRATION) ?? 0);
     }
 
     return MigrationState.instance;
+  }
+
+  public get TimeBetweenMigrations() {
+    return MigrationState.timeBetweenMigrations;
   }
 
   public get AppIsRunning() {
