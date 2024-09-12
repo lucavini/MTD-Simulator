@@ -55,7 +55,7 @@ class TimeModule {
     }, delay);
   }
 
-  public async stop() {
+  public async rescheduled() {
     debug.warn('⏰ TimeModule', ' Time-based migration rescheduled');
 
     const runningVm = await checkRunningVMs();
