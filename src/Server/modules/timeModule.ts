@@ -5,7 +5,7 @@ import migrationState from '../controller/classes/MigrationState';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
 import serviceLog from '../controller/classes/ServiceLog';
 
-const delay = 5 * 60 * 1000;
+const delay = migrationState.TimeBetweenMigrations;
 // const delay = 5000;
 
 class TimeModule {
