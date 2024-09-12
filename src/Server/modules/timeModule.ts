@@ -1,12 +1,13 @@
 import cron from 'node-cron';
 import debug from '@Lib/Debug';
-import startNewMigration from '../controller/tasks/createNewMigration';
+import * as path from 'path';
+import startNewMigration, { listAllVMsName } from '../controller/tasks/createNewMigration';
 import migrationState from '../controller/classes/MigrationState';
 import checkRunningVMs from '../controller/tasks/getRunningVMName';
-import serviceLog from '../controller/classes/ServiceLog';
+import VMState, { Status } from '../controller/classes/VMState';
 
 const delay = migrationState.TimeBetweenMigrations;
-// const delay = 5000;
+const directoryPath = path.resolve(__dirname, '../controller/image');
 
 class TimeModule {
   public static instance: TimeModule;
@@ -14,6 +15,10 @@ class TimeModule {
   public static cronJob: cron.ScheduledTask;
 
   public static timer: NodeJS.Timeout;
+
+  public static arrayVMS: VMState[];
+
+  public static currentVm: VMState | undefined;
 
   private constructor() {
     debug.info('TimeModule', 'instance created');
@@ -38,28 +43,28 @@ class TimeModule {
 
   public async startMigration() {
     const isEnabled = await this.canStartMigration();
-    const runningVm = await checkRunningVMs();
 
     if (isEnabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
-      serviceLog.serviceDown(runningVm);
+      TimeModule.currentVm?.setVMLogService(Status.Down);
       startNewMigration();
     }
   }
 
   public async start() {
-    debug.warn('⏰ TimeModule', ' Time-based migration has been scheduled');
+    debug.warn('⏰ TimeModule', ' Time-based migration has been started');
 
-    TimeModule.timer = setTimeout(async () => {
-      await this.startMigration();
-    }, delay);
+    const vmsList = await listAllVMsName(directoryPath);
+    TimeModule.arrayVMS = vmsList.map((vmID) => new VMState(vmID));
   }
 
-  public async rescheduled() {
-    debug.warn('⏰ TimeModule', ' Time-based migration rescheduled');
+  public async schedule() {
+    debug.warn('⏰ TimeModule', 'new migration scheduled');
 
     const runningVm = await checkRunningVMs();
-    serviceLog.serviceUp(runningVm);
+
+    TimeModule.currentVm = TimeModule.arrayVMS.find((vm) => vm.vmID === runningVm);
+    TimeModule.currentVm?.setVMLogService(Status.Up);
 
     clearTimeout(TimeModule.timer);
 
