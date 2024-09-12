@@ -118,8 +118,8 @@ const runMigrateScript = (vmName: String): Promise<void> => {
 };
 
 async function startNewMigration() {
-  // Get all VMs in migation_image folder
-  await listAllVMsName(`${directoryPath}/migation_image`)
+  // Get all VMs in image folder
+  await listAllVMsName(`${directoryPath}/image`)
     .then((allCurrentVMs) => {
       debug.info('listAllVMsName', `all current VMs: ${allCurrentVMs}`);
     })
