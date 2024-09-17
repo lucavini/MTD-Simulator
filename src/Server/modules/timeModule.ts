@@ -16,12 +16,15 @@ class TimeModule {
 
   public static timer: NodeJS.Timeout;
 
+  public static globalTimer: NodeJS.Timeout;
+
   public static arrayVMS: VMState[];
 
-  public static currentVm: VMState | undefined;
+  public static currentVm: VMState;
 
   private constructor() {
     debug.info('TimeModule', 'instance created');
+    TimeModule.arrayVMS = [];
   }
 
   public static Instance(): TimeModule {
@@ -37,7 +40,8 @@ class TimeModule {
     return (
       !migrationState.MigrationIsRunning &&
       migrationState.AppIsRunning &&
-      runningVm
+      runningVm &&
+      !TimeModule.currentVm.status.isVMCompromised
     );
   }
 
@@ -47,7 +51,39 @@ class TimeModule {
     if (isEnabled) {
       debug.info('⏰ TimeModule', 'starting new migration');
       TimeModule.currentVm?.setVMLogService(Status.Down);
+      clearInterval(TimeModule.globalTimer);
       startNewMigration();
+    }
+  }
+
+  public stopSystem() {
+    debug.error('timeModule', `${TimeModule.currentVm.Id} sucessfully compromised`);
+
+    clearTimeout(TimeModule.timer);
+    clearInterval(TimeModule.globalTimer);
+
+    TimeModule.currentVm.status.setIsVMCompromised();
+    TimeModule.arrayVMS.forEach((vm) => vm.stopAllLogging());
+  }
+
+  public logAttackProgress() {
+    TimeModule.currentVm?.status.increateCurrentAttackTime();
+
+    const attackTime = TimeModule.currentVm?.status.currentAttackTime;
+    const stageTime = TimeModule.currentVm?.status.timePerStage;
+
+    if (attackTime >= stageTime) {
+      TimeModule.currentVm.status.increaseAttackStage();
+      TimeModule.currentVm.status.resetCurrentAttackTime();
+    }
+
+    const attackStages = TimeModule.currentVm?.status.attackStages;
+    const currentAttackStage = TimeModule.currentVm?.status.currentAttackStage;
+
+    debug.warn(`Attack on ${TimeModule.currentVm.Id}`, `progress: ${attackTime} timePerStage: ${stageTime} | currentStage: ${currentAttackStage}`);
+
+    if (currentAttackStage >= attackStages) {
+      this.stopSystem();
     }
   }
 
@@ -59,18 +95,26 @@ class TimeModule {
   }
 
   public async schedule() {
-    debug.warn('⏰ TimeModule', 'new migration scheduled');
+    if (TimeModule.currentVm?.status?.isVMCompromised) {
+      return;
+    }
+
+    debug.info('⏰ TimeModule', 'new migration scheduled');
 
     const runningVm = await checkRunningVMs();
-
-    TimeModule.currentVm = TimeModule.arrayVMS.find((vm) => vm.vmID === runningVm);
+    TimeModule.currentVm = TimeModule.arrayVMS.find((vm) => vm.Id === runningVm)!;
     TimeModule.currentVm?.setVMLogService(Status.Up);
 
     clearTimeout(TimeModule.timer);
+    clearInterval(TimeModule.globalTimer);
 
     TimeModule.timer = setTimeout(async () => {
       await this.startMigration();
     }, delay);
+
+    TimeModule.globalTimer = setInterval(async () => {
+      this.logAttackProgress();
+    }, 1000);
   }
 }
 
