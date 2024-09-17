@@ -78,6 +78,10 @@ class ServiceLog {
     this.arrayIntervals.push(interval);
   };
 
+  stopAllLogging = () => {
+    this.arrayIntervals.forEach((vm) => clearInterval(vm.intervalID));
+  };
+
   stopLogging = (vmID: string, statusType: string) => {
     this.arrayIntervals.filter((objectLog) => {
       if (objectLog.vmID === vmID && objectLog.statusType === statusType) {
