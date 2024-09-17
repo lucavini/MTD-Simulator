@@ -1,3 +1,4 @@
+import debug from '@Lib/Debug';
 import AttackStatus from './AttackStatus';
 import serviceLog from './ServiceLog';
 
@@ -7,31 +8,37 @@ export enum Status {
 }
 
 class VMState {
-  private static vmID: string;
+  private vmID: string;
 
-  private static attackStatus: AttackStatus;
+  private attackStatus: AttackStatus;
 
   public constructor(vmID: string) {
-    VMState.vmID = vmID;
-    VMState.attackStatus = new AttackStatus(0);
-    serviceLog.serviceDown(VMState.vmID);
+    this.vmID = vmID;
+    this.attackStatus = new AttackStatus();
+    serviceLog.serviceDown(this.vmID);
+    debug.info('VMState', `${vmID} instance created`);
   }
 
-  public get getStatus() {
-    return VMState.attackStatus.isVMCompromised;
+  public get status() {
+    return this.attackStatus;
   }
 
-  public get vmID() {
-    return VMState.vmID;
+  public get Id() {
+    return this.vmID;
+  }
+
+  public stopAllLogging() {
+    serviceLog.stopAllLogging();
   }
 
   public setVMLogService(statusType: Status) {
+    debug.info(this.vmID, `${statusType}`);
     if (statusType === Status.Up) {
-      serviceLog.serviceUp(VMState.vmID);
+      serviceLog.serviceUp(this.vmID);
     }
 
     if (statusType === Status.Down) {
-      serviceLog.serviceDown(VMState.vmID);
+      serviceLog.serviceDown(this.vmID);
     }
   }
 }
